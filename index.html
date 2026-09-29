@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1769ff">
+<title>Combi Ya - Arequipa</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:Arial,system-ui,sans-serif;background:#f3f6fb;color:#172033}
+button,input{font:inherit}
+button{cursor:pointer;border:0}
+.app{min-height:100vh;background:#f3f6fb}
+header{position:sticky;top:0;z-index:20;background:white;border-bottom:1px solid #e5eaf1;padding:14px 16px}
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{font-size:21px;font-weight:900;color:#1769ff}
+.location{font-size:11px;color:#718096;margin-top:3px}
+.screen{display:none;padding:16px;padding-bottom:95px}
+.screen.active{display:block}
+.hero{background:linear-gradient(135deg,#062f8d,#1769ff);color:white;border-radius:22px;padding:22px 18px}
+.hero small{font-size:10px;font-weight:800;letter-spacing:1px}
+.hero h1{font-size:31px;line-height:1.08;margin:10px 0}
+.hero p{font-size:13px;line-height:1.5;color:#dce9ff}
+.search{background:white;border-radius:14px;padding:6px;display:flex;gap:6px;margin-top:18px}
+.search input{width:100%;border:0;outline:0;padding:12px;min-width:0}
+.primary{background:#1769ff;color:white;border-radius:11px;padding:12px 15px;font-weight:800}
+.yellow{background:#ffd43b;color:#172033}
+.section-title{margin:24px 0 12px}
+.section-title h2{font-size:20px;margin:0}
+.section-title p{font-size:11px;color:#718096;margin:4px 0}
+.card{background:white;border:1px solid #e5eaf1;border-radius:18px;padding:15px;margin-bottom:12px}
+.route{display:grid;grid-template-columns:54px 1fr;gap:12px;align-items:start}
+.route-icon{height:54px;border-radius:14px;background:linear-gradient(135deg,#1769ff,#54a6ff);color:white;display:grid;place-items:center;font-weight:900;font-size:17px}
+.route h3{margin:2px 0 4px;font-size:15px}
+.route p{margin:3px 0;color:#718096;font-size:10px}
+.eta{color:#18b66b;font-weight:900;font-size:15px;margin-top:6px}
+.route button{grid-column:1/-1;width:100%}
+.tag{display:inline-block;background:#e8f9f0;color:#119457;border-radius:20px;padding:5px 8px;font-size:9px;font-weight:900}
+.map{height:430px;position:relative;overflow:hidden;border-radius:20px;background:#dce8d5;border:4px solid white}
+.map:before{content:"AREQUIPA";position:absolute;left:20px;top:25px;font-size:27px;font-weight:900;letter-spacing:5px;color:#60735b33}
+.road{position:absolute;height:10px;width:115%;left:-7%;top:57%;background:#1769ff;border-radius:20px;transform:rotate(-13deg)}
+.stop{position:absolute;width:30px;height:30px;background:white;border:4px solid #f97316;border-radius:50%;display:grid;place-items:center}
+.bus{position:absolute;width:48px;height:48px;background:#1769ff;color:white;border:4px solid white;border-radius:50%;display:grid;place-items:center;font-size:22px}
+.panel{position:absolute;left:12px;right:12px;bottom:12px;background:#fffffff5;border-radius:15px;padding:12px}
+.panel b{font-size:13px}
+.panel .big{font-size:27px;color:#18b66b;font-weight:900;margin:5px 0}
+.controls{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:6px}
+.controls button{background:white;border-radius:10px;padding:9px 12px;font-weight:800}
+.timeline .row{padding:13px 0;border-bottom:1px solid #e5eaf1;font-size:12px}
+.timeline .row:last-child{border-bottom:0}
+.mobile-menu{position:fixed;bottom:0;left:0;right:0;height:72px;background:white;border-top:1px solid #e5eaf1;display:grid;grid-template-columns:repeat(4,1fr);z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+.mobile-menu button{background:white;color:#718096;font-size:10px;font-weight:800}
+.mobile-menu span{display:block;font-size:21px;margin-bottom:2px}
+.mobile-menu button.active{color:#1769ff}
+.notice{background:#fff8d8;color:#725e00;border-radius:14px;padding:11px;font-size:10px;line-height:1.4;margin-top:14px}
+.toast{position:fixed;left:16px;right:16px;bottom:86px;background:#172033;color:white;padding:12px;border-radius:12px;text-align:center;display:none;z-index:50;font-size:12px}
+@media(min-width:800px){
+ body{background:#eaf0f8}
+ .app{max-width:900px;margin:auto;background:#f3f6fb;box-shadow:0 0 50px #0001}
+ .screen{padding:25px 28px 95px}
+ .hero h1{font-size:42px}
+ .route{grid-template-columns:62px 1fr auto}
+ .route button{grid-column:auto;width:auto}
+ .map{height:570px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="header-row">
+  <div><div class="logo">🚌 Combi Ya</div><div class="location">📍 Arequipa, Perú · prototipo</div></div>
+  <b>U</b>
+ </div>
+</header>
+
+<section id="home" class="screen active">
+ <div class="hero">
+  <small>TRANSPORTE URBANO · AREQUIPA</small>
+  <h1>Muévete sin adivinar cuándo pasa tu combi.</h1>
+  <p>Busca tu destino, identifica una ruta y revisa una estimación del tiempo de espera.</p>
+  <div class="search"><input id="q" placeholder="¿A dónde quieres llegar?"><button class="yellow" onclick="go('search');toast('🔎 Buscando rutas')">Buscar</button></div>
+ </div>
+ <div class="section-title"><h2>Rutas piloto</h2><p>Selecciona una ruta para revisar sus datos.</p></div>
+ <div class="card route">
+  <div class="route-icon">T6</div>
+  <div><span class="tag">ACTIVA</span><h3>Ciudad Blanca</h3><p>Terminal AQP Masivo → Cercado</p><p>🚏 Av. Jesús · Mariscal Castilla · Cercado</p><div class="eta">5–10 min</div></div>
+  <button class="primary" onclick="openRoute('T6')">Ver ruta</button>
+ </div>
+ <div class="card route">
+  <div class="route-icon">T9</div>
+  <div><span class="tag">ACTIVA</span><h3>Alto Jesús</h3><p>Alto Jesús → Seguro Social</p><p>🚏 Paucarpata · Cercado</p><div class="eta">8–12 min</div></div>
+  <button class="primary" onclick="openRoute('T9')">Ver ruta</button>
+ </div>
+ <div class="notice">🟡 <b>DEMO:</b> los tiempos y posiciones de las unidades son simulados para representar el funcionamiento del prototipo.</div>
+</section>
+
+<section id="search" class="screen">
+ <div class="section-title"><h2>Buscar ruta</h2><p>Ejemplo de búsqueda para la validación.</p></div>
+ <div class="card">
+  <p>📍 <b>Origen:</b> Av. Jesús</p>
+  <p>🏁 <b>Destino:</b> Cercado de Arequipa</p>
+  <button class="primary" style="width:100%" onclick="showResults()">Encontrar rutas</button>
+ </div>
+ <div id="results" style="display:none">
+  <div class="section-title"><h2>Rutas encontradas</h2></div>
+  <div class="card route"><div class="route-icon">T6</div><div><span class="tag">5–10 MIN</span><h3>Ciudad Blanca</h3><p>Av. Jesús → Cercado</p></div><button class="primary" onclick="openRoute('T6')">Elegir</button></div>
+  <div class="card route"><div class="route-icon">T9</div><div><span class="tag">8–12 MIN</span><h3>Alto Jesús</h3><p>Paucarpata → Cercado</p></div><button class="primary" onclick="openRoute('T9')">Elegir</button></div>
+ </div>
+</section>
+
+<section id="mapScreen" class="screen">
+ <div class="section-title"><h2>Mapa de recorrido</h2><p>Ubicación y recorrido simulados.</p></div>
+ <div class="map">
+  <div class="road"></div>
+  <div class="stop" style="left:10%;top:64%">🚏</div>
+  <div class="stop" style="left:39%;top:53%">🚏</div>
+  <div class="stop" style="right:9%;top:35%">🏁</div>
+  <div class="bus" style="left:25%;top:50%">🚌</div>
+  <div class="bus" style="left:61%;top:39%">🚌</div>
+  <div class="controls"><button onclick="toast('📍 Tu ubicación es simulada')">◎ Mi ubicación</button><button onclick="moveBus()">↻ Actualizar</button></div>
+  <div class="panel"><b id="mapRoute">🚌 T6 · Ciudad Blanca</b><div class="big" id="mapEta">5–10 min</div><small>Rango estimado · no es GPS real</small></div>
+ </div>
+</section>
+
+<section id="route" class="screen">
+ <div class="section-title"><h2 id="routeName">T6 · Ciudad Blanca</h2><p id="routeDesc">Terminal AQP Masivo → Cercado de Arequipa</p></div>
+ <div class="card"><span class="tag">PRÓXIMA UNIDAD</span><div class="eta" id="routeEta" style="font-size:28px">5–10 min</div></div>
+ <div class="card timeline">
+  <h3>Recorrido</h3>
+  <div class="row">🚏 <b id="stop1">Av. Jesús</b> · próximo paradero</div>
+  <div class="row">🚏 <b id="stop2">Mariscal Castilla</b></div>
+  <div class="row">🏁 <b id="stop3">Calle Peral · Cercado</b> · destino</div>
+ </div>
+ <button class="primary" style="width:100%" onclick="go('mapScreen')">Ver unidad en mapa</button>
+</section>
+
+<nav class="mobile-menu">
+ <button class="active" onclick="go('home',this)"><span>⌂</span>Inicio</button>
+ <button onclick="go('search',this)"><span>⌕</span>Buscar</button>
+ <button onclick="go('mapScreen',this)"><span>◉</span>Mapa</button>
+ <button onclick="go('route',this)"><span>⇢</span>Ruta</button>
+</nav>
+<div id="toast" class="toast"></div>
+</div>
+
+<script>
+function go(id,btn){
+ document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.mobile-menu button').forEach(x=>x.classList.remove('active'));
+ if(btn)btn.classList.add('active');
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function showResults(){document.getElementById('results').style.display='block';toast('🔎 Encontramos 2 rutas')}
+function openRoute(code){
+ const t=code==='T6';
+ document.getElementById('routeName').textContent=t?'T6 · Ciudad Blanca':'T9 · Alto Jesús';
+ document.getElementById('routeDesc').textContent=t?'Terminal AQP Masivo → Cercado de Arequipa':'Alto Jesús → Seguro Social, Cercado';
+ document.getElementById('routeEta').textContent=t?'5–10 min':'8–12 min';
+ document.getElementById('stop1').textContent=t?'Av. Jesús':'Alto Jesús · Paucarpata';
+ document.getElementById('stop2').textContent=t?'Mariscal Castilla':'Paucarpata';
+ document.getElementById('stop3').textContent=t?'Calle Peral · Cercado':'Seguro Social · Cercado';
+ document.getElementById('mapRoute').textContent=t?'🚌 T6 · Ciudad Blanca':'🚌 T9 · Alto Jesús';
+ document.getElementById('mapEta').textContent=t?'5–10 min':'8–12 min';
+ go('route');
+ toast('🚌 '+code+' seleccionada');
+}
+function moveBus(){toast('↻ Posiciones simuladas actualizadas')}
+function toast(msg){
+ const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
+ clearTimeout(window.tm);window.tm=setTimeout(()=>t.style.display='none',2200);
+}
+</script>
+</body>
+</html>
